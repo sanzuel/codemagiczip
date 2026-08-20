@@ -1,1 +1,34 @@
 workflows:
+workflows:
+  android-apk:
+    name: SongSetlist Android APK
+    max_build_duration: 60
+    instance_type: linux_x2
+
+    environment:
+      flutter: stable
+      groups: []
+      vars:
+        PACKAGE_NAME: com.example.songsetlist
+
+    scripts:
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+      - name: Analyze project
+        script: |
+          flutter analyze --no-fatal-infos || true
+      - name: Build release APK
+        script: |
+          flutter build apk --release
+
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+
+    publishing:
+      email:
+        recipients:
+          - $CM_BUILD_TRIGGERED_BY
+        notify:
+          success: true
+          failure: true
